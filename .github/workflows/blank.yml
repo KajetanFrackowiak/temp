@@ -1,0 +1,44 @@
+name: TikTok Automation
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  tik_tok_automation:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      # Step 2: Set up Python environment
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.9'
+
+      # Step 3: Install dependencies
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # Step 4: Set up Chrome and download specific version
+      - name: Install Chrome 131.0.6778.87
+        run: |
+          wget https://dl.google.com/linux/direct/google-chrome-stable_131.0.6778.87-1_amd64.deb
+          sudo dpkg -i google-chrome-stable_131.0.6778.87-1_amd64.deb
+          sudo apt-get install -f
+
+      # Step 5: Run the TikTok automation script
+      - name: Run TikTok automation script
+        env:
+          TIKTOK_EMAIL: ${{ secrets.TIKTOK_EMAIL }}
+          TIKTOK_PASSWORD: ${{ secrets.TIKTOK_PASSWORD }}
+          CAPTCHA_KEY: ${{ secrets.CAPTCHA_KEY }}
+        run: |
+          python tiktok.py
