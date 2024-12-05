@@ -10,7 +10,7 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
-
+    
     - name: Setup Chrome
       uses: browser-actions/setup-chrome@v1
       with:
