@@ -4,4 +4,4 @@ httpcore==0.17.0
 selenium==4.6.0
 undetected-chromedriver==3.0.0
 tiktok-captcha-solver==0.6.1
-httpcore
+httpcore==1.0.2
