@@ -24,9 +24,17 @@ CAPTCHA_KEY = os.getenv("CAPTCHA_KEY")
 def login_and_get_cookies(username, password):
     """Login to TikTok and handle CAPTCHA solving."""
 
-    # Use undetected_chromedriver to avoid detection
-    driver = uc.Chrome()
+    # Set up Chrome options
+    options = uc.ChromeOptions()
 
+    # Add arguments to Chrome options
+    options.add_argument("--headless=new")  # Run headless
+    options.add_argument("--no-sandbox")  # Needed for CI/CD environments
+    options.add_argument("--disable-dev-shm-usage")  # Avoid issues with shared memory in CI environments
+    options.add_argument("--disable-blink-features=AutomationControlled")  # Prevent detection as automated bot
+
+    # Use undetected_chromedriver with the options
+    driver = uc.Chrome(options=options)
 
     # Initialize the CAPTCHA solver
     sadcaptcha = SeleniumSolver(
@@ -51,8 +59,6 @@ def login_and_get_cookies(username, password):
     input_email = driver.find_element(By.XPATH, "//input[@placeholder='Email or username']")
     input_email.send_keys(TIKTOK_EMAIL)
 
-
-
     # Wait for the password input field
     try:
         WebDriverWait(driver, 20).until(
@@ -65,14 +71,6 @@ def login_and_get_cookies(username, password):
 
     input_password = driver.find_element(By.XPATH, "//input[@placeholder='Password']")
     input_password.send_keys(TIKTOK_PASSWORD)
-
-    # WebDriverWait(driver, 50).until(
-    #     EC.element_to_be_clickable((By.CSS_SELECTOR, "button[text='Allow all']"))
-    # ).click()
-    # WebDriverWait(driver, 20).until(
-    #     EC.visibility_of_element_located(
-    #         (By.CSS_SELECTOR, ".tiktok-cookie-banner .button-wrapper button:nth-child(2)"))
-    # ).click()
 
     # Click login button
     try:
@@ -90,19 +88,7 @@ def login_and_get_cookies(username, password):
     time.sleep(10)
     driver.get("https://www.tiktok.com/tiktokstudio/upload")
 
-    # Save cookies for later use
-    # cookies = driver.get_cookies()
-    # pickle.dump(cookies, open("cookies.pkl", "wb"))
-    #
-    # print("Login successful and cookies saved.")
-    # WebDriverWait(driver, 20).until(
-    #     EC.presence_of_element_located((By.XPATH, "//div[@class='TUXButton-label' and text()='Upload ']"))
-    # ).click()
-
-    # WebDriverWait(driver, 20).until(
-    #     EC.presence_of_element_located((By.XPATH, "//div[@class='TUXButton-label' and text()='Select video']"))
-    # ).click()
-    #
+    # Wait for the file input to be present
     WebDriverWait(driver, 20).until(
         EC.presence_of_element_located((By.XPATH, "//input[@type='file']"))
     )
@@ -112,36 +98,19 @@ def login_and_get_cookies(username, password):
     video_path = os.path.join(os.getcwd(), "beauty_summary_in_en.mp4")
     file_input.send_keys(video_path)
 
-
-
-
-    # driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-
-    # input_video = driver.find_element((By.XPATH, "//div[@class='TUXButton-label' and text()='Select video']"))
-    # input_video.send_keys("beauty_summary_in_en.mp4")
-    #
-    # Wait for the page to load
+    # Scroll down the page
     time.sleep(3)
-
-
-
     driver.execute_script("window.scrollBy(0, 10000);")
-
-    # Wait for a few seconds to observe the scroll
-    time.sleep(3)
 
     # Wait for the Post button to be clickable
     wait = WebDriverWait(driver, 20)
-
-    # Locate the button using its text ("Post")
-    post_button = wait.until(EC.element_to_be_clickable((By.XPATH,"//button[@data-e2e='post_video_button']")))
+    post_button = wait.until(EC.element_to_be_clickable((By.XPATH, "//button[@data-e2e='post_video_button']")))
 
     # Click the button
     post_button.click()
 
     time.sleep(10)
     driver.quit()
-
 
 
 login_and_get_cookies(TIKTOK_EMAIL, TIKTOK_PASSWORD)
