@@ -16,6 +16,7 @@ jobs:
       with:
         chrome-version: 131
         install-chromedriver: true
+        install-dependencies: true
 
     - name: Install Chrome Dependencies
       run: |
