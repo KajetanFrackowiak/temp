@@ -1,10 +1,7 @@
-name: Run TikTok Selenium Script
+name: Run Selenium Script with undetected_chromedriver
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
 
 jobs:
   run-selenium:
@@ -13,12 +10,26 @@ jobs:
     steps:
     - name: Checkout code
       uses: actions/checkout@v2
-    
+
     - name: Setup Chrome
       uses: browser-actions/setup-chrome@v1
       with:
         chrome-version: 120
         install-chromedriver: true
+
+    - name: Install Chrome Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y \
+          libnss3 \
+          libgconf-2-4 \
+          libx11-xcb1 \
+          libxcomposite1 \
+          libxi6 \
+          libxrandr2 \
+          libasound2 \
+          libpangocairo-1.0-0 \
+          libxshmfence1
 
     - name: Setup Python
       uses: actions/setup-python@v2
@@ -30,12 +41,9 @@ jobs:
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
-
-
-    - name: Run TikTok Automation Script
+    - name: Run Selenium Script
       env:
         TIKTOK_EMAIL: ${{ secrets.TIKTOK_EMAIL }}
         TIKTOK_PASSWORD: ${{ secrets.TIKTOK_PASSWORD }}
-        CAPTCHA_KEY: ${{ secrets.CAPTCHA_KEY }}
       run: |
         python tiktok.py
