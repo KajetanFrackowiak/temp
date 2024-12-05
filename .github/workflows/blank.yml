@@ -1,55 +1,40 @@
-name: TikTok Automation
+name: Run TikTok Selenium Script
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
-  workflow_dispatch:
 
 jobs:
-  tik_tok_automation:
+  run-selenium:
     runs-on: ubuntu-latest
 
     steps:
-      # Step 1: Checkout the repository
-      - name: Checkout code
-        uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v2
 
-      # Step 2: Set up Python environment
-      - name: Set up Python 3.12
-        uses: actions/setup-python@v3
-        with:
-          python-version: '3.12'
+    - name: Setup Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: "3.12"
 
-      # Step 3: Install dependencies
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements.txt
+    - name: Install Dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install selenium undetected-chromedriver python-dotenv tiktok-captcha-solver requests
 
-      # Step 4: Set up Chrome and download specific version
-      - name: Install wget and unzip
-        run: |
-          sudo apt update
-          sudo apt install -y wget unzip
-  
-      - name: Download Google Chrome
-        run: |
-          wget https://storage.googleapis.com/chrome-for-testing-public/131.0.6778.87/linux64/chrome-linux64.zip
-  
-      - name: Extract Google Chrome
-        run: |
-          unzip chrome-linux64.zip
-  
-      - name: Verify Chrome Installation
-        run: |
-          ./chrome-linux64/chrome --version
+    - name: Install Google Chrome
+      run: |
+        wget https://storage.googleapis.com/chrome-for-testing-public/131.0.6778.87/linux64/chrome-linux64.zip
+        unzip chrome-linux64.zip
+        sudo mv chrome-linux64 /usr/local/bin/chrome
+        sudo ln -s /usr/local/bin/chrome/chrome /usr/bin/google-chrome
 
-      # Step 5: Run the TikTok automation script
-      - name: Run TikTok automation script
-        env:
-          TIKTOK_EMAIL: ${{ secrets.TIKTOK_EMAIL }}
-          TIKTOK_PASSWORD: ${{ secrets.TIKTOK_PASSWORD }}
-          CAPTCHA_KEY: ${{ secrets.CAPTCHA_KEY }}
-        run: |
-          python tiktok.py
+    - name: Run TikTok Automation Script
+      env:
+        TIKTOK_EMAIL: ${{ secrets.TIKTOK_EMAIL }}
+        TIKTOK_PASSWORD: ${{ secrets.TIKTOK_PASSWORD }}
+        CAPTCHA_KEY: ${{ secrets.CAPTCHA_KEY }}
+      run: |
+        python your_script.py
