@@ -28,6 +28,7 @@ def login_and_get_cookies(username, password):
     options = uc.ChromeOptions()
 
     # Add arguments to Chrome options
+    options.add_argument("--headless")
     options.add_argument("--headless=new")  # Run headless
     options.add_argument("--no-sandbox")  # Needed for CI/CD environments
     options.add_argument("--disable-dev-shm-usage")  # Avoid issues with shared memory in CI environments
@@ -52,9 +53,10 @@ def login_and_get_cookies(username, password):
             EC.presence_of_element_located((By.XPATH, "//input[@placeholder='Email or username']"))
         )
     except TimeoutException:
-        print("Email input field not found within the timeout period.")
-        driver.quit()
-        return
+        print("Email input field not found, retrying...")
+        time.sleep(5)
+        driver.refresh()  # Optionally refresh the page
+
 
     input_email = driver.find_element(By.XPATH, "//input[@placeholder='Email or username']")
     input_email.send_keys(TIKTOK_EMAIL)
