@@ -57,5 +57,6 @@ jobs:
       env:
         TIKTOK_EMAIL: ${{ secrets.TIKTOK_EMAIL }}
         TIKTOK_PASSWORD: ${{ secrets.TIKTOK_PASSWORD }}
+        CAPTCHA_KEY: ${{ secrets.CAPTCHA_KEY }}
       run: |
         python tiktok.py
