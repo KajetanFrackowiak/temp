@@ -28,11 +28,22 @@ jobs:
           pip install -r requirements.txt
 
       # Step 4: Set up Chrome and download specific version
-      - name: Install Chrome 131.0.6778.87
+      - name: Install wget and unzip
         run: |
-          wget https://dl.google.com/linux/direct/google-chrome-stable_131.0.6778.87-1_amd64.deb
-          sudo dpkg -i google-chrome-stable_131.0.6778.87-1_amd64.deb
-          sudo apt-get install -f
+          sudo apt update
+          sudo apt install -y wget unzip
+  
+      - name: Download Google Chrome
+        run: |
+          wget https://storage.googleapis.com/chrome-for-testing-public/131.0.6778.87/linux64/chrome-linux64.zip
+  
+      - name: Extract Google Chrome
+        run: |
+          unzip chrome-linux64.zip
+  
+      - name: Verify Chrome Installation
+        run: |
+          ./chrome-linux64/chrome --version
 
       # Step 5: Run the TikTok automation script
       - name: Run TikTok automation script
