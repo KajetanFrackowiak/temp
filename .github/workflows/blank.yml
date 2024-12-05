@@ -29,6 +29,9 @@ jobs:
         wget https://storage.googleapis.com/chrome-for-testing-public/131.0.6778.87/linux64/chrome-linux64.zip
         unzip chrome-linux64.zip
         sudo mv chrome-linux64 /usr/local/bin/chrome
+        if [ -L /usr/bin/google-chrome ]; then
+          sudo rm /usr/bin/google-chrome
+        fi
         sudo ln -s /usr/local/bin/chrome/chrome /usr/bin/google-chrome
 
     - name: Run TikTok Automation Script
