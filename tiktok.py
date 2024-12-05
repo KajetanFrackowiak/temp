@@ -25,7 +25,7 @@ def login_and_get_cookies(username, password):
     """Login to TikTok and handle CAPTCHA solving."""
 
     # Use undetected_chromedriver to avoid detection
-    driver = uc.Chrome(headless=False)
+    driver = uc.Chrome()
 
 
     # Initialize the CAPTCHA solver
