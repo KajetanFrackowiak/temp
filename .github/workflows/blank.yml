@@ -21,16 +21,27 @@ jobs:
     - name: Install Chrome Dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y \
-          libnss3 \
-          libgconf-2-4 \
-          libx11-xcb1 \
-          libxcomposite1 \
-          libxi6 \
-          libxrandr2 \
-          libasound2 \
-          libpangocairo-1.0-0 \
-          libxshmfence1
+            sudo apt-get install -y \
+            libnss3 \
+            libgconf-2-4 \
+            libx11-xcb1 \
+            libxcomposite1 \
+            libxi6 \
+            libxrandr2 \
+            libasound2 \
+            libpangocairo-1.0-0 \
+            libxshmfence1
+
+          # Install Google Chrome (latest stable version)
+          curl -sSL https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -o google-chrome-stable_current_amd64.deb
+          sudo apt install ./google-chrome-stable_current_amd64.deb
+  
+          # Install ChromeDriver
+          CHROME_DRIVER_VERSION=$(curl -sSL https://chromedriver.storage.googleapis.com/LATEST_RELEASE)
+          wget https://chromedriver.storage.googleapis.com/${CHROME_DRIVER_VERSION}/chromedriver_linux64.zip
+          unzip chromedriver_linux64.zip
+          sudo mv chromedriver /usr/local/bin/
+          
 
     - name: Setup Python
       uses: actions/setup-python@v2
