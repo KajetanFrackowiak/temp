@@ -11,48 +11,51 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v2
     
-    - name: Setup Chrome
-      uses: browser-actions/setup-chrome@v1
-      with:
-        chrome-version: 131
-        install-chromedriver: true
-        install-dependencies: true
-
-    - name: Install Chrome Dependencies
+    # Set up Xvfb (Virtual Display) for headless Chrome
+    - name: Install Xvfb and dependencies
       run: |
         sudo apt-get update
-            sudo apt-get install -y \
-            libnss3 \
-            libgconf-2-4 \
-            libx11-xcb1 \
-            libxcomposite1 \
-            libxi6 \
-            libxrandr2 \
-            libasound2 \
-            libpangocairo-1.0-0 \
-            libxshmfence1
+        sudo apt-get install -y \
+          xvfb \
+          wget \
+          curl \
+          unzip \
+          libnss3 \
+          libgconf-2-4 \
+          libx11-xcb1 \
+          libxcomposite1 \
+          libxi6 \
+          libxrandr2 \
+          libasound2 \
+          libpangocairo-1.0-0 \
+          libxshmfence1
 
-          # Install Google Chrome (latest stable version)
-          curl -sSL https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -o google-chrome-stable_current_amd64.deb
-          sudo apt install ./google-chrome-stable_current_amd64.deb
-  
-          # Install ChromeDriver
-          CHROME_DRIVER_VERSION=$(curl -sSL https://chromedriver.storage.googleapis.com/LATEST_RELEASE)
-          wget https://chromedriver.storage.googleapis.com/${CHROME_DRIVER_VERSION}/chromedriver_linux64.zip
-          unzip chromedriver_linux64.zip
-          sudo mv chromedriver /usr/local/bin/
-          
+        # Install Google Chrome (latest stable version)
+        curl -sSL https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb -o google-chrome-stable_current_amd64.deb
+        sudo apt install ./google-chrome-stable_current_amd64.deb
 
+        # Install ChromeDriver
+        CHROME_DRIVER_VERSION=$(curl -sSL https://chromedriver.storage.googleapis.com/LATEST_RELEASE)
+        wget https://chromedriver.storage.googleapis.com/${CHROME_DRIVER_VERSION}/chromedriver_linux64.zip
+        unzip chromedriver_linux64.zip
+        sudo mv chromedriver /usr/local/bin/
+
+        # Start Xvfb (Virtual Framebuffer) on display :99
+        nohup Xvfb :99 & export DISPLAY=:99
+
+    # Set up Python environment
     - name: Setup Python
       uses: actions/setup-python@v2
       with:
         python-version: "3.12"
 
+    # Install Python dependencies
     - name: Install Dependencies
       run: |
         python -m pip install --upgrade pip
         pip install -r requirements.txt
 
+    # Run the Selenium script
     - name: Run Selenium Script
       env:
         TIKTOK_EMAIL: ${{ secrets.TIKTOK_EMAIL }}
